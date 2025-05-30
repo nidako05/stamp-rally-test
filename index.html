@@ -8,7 +8,7 @@
   <!-- ✅ OGP設定 -->
   <meta property="og:title" content="ねこ！">
   <meta property="og:description" content="ねこスタンプをコンプリート✨">
-  <meta property="og:image" content="https://your-site.com/images/ogp-image.png">
+  <meta property="og:image" content="https://your-site.com/images/ogp-image.PNG">
   <meta property="og:url" content="https://your-site.com/stamp-rally.html">
   <meta property="og:type" content="website">
 
@@ -16,7 +16,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ねこ！">
   <meta name="twitter:description" content="ねこスタンプをコンプリート✨">
-  <meta name="twitter:image" content="https://your-site.com/images/ogp-image.png">
+  <meta name="twitter:image" content="https://your-site.com/images/ogp-image.PNG">
 
   <style>
     body {
@@ -166,11 +166,11 @@
         if (stamps.includes(i)) {
           div.classList.add('collected');
           div.innerHTML = `
-            <a href="images/stamp${i}.png" download>
-              <img src="images/stamp${i}.png" alt="スタンプ${i}">
+            <a href="images/stamp${i}.PNG" download>
+              <img src="images/stamp${i}.PNG" alt="スタンプ${i}">
             </a>`;
         } else {
-          div.innerHTML = `<img src="images/stamp${i}.png" alt="スタンプ${i}" style="opacity: 0.2;">`;
+          div.innerHTML = `<img src="images/stamp${i}.PNG" alt="スタンプ${i}" style="opacity: 0.2;">`;
         }
         container.appendChild(div);
       }
