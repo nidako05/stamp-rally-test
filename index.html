@@ -144,18 +144,18 @@
     }
 
     /* 背景に星を散りばめる */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: transparent url('https://i.imgur.com/3bZ1Jq0.png') repeat;
-      opacity: 0.2;
-      z-index: -1;
-      animation: twinkle 10s linear infinite;
-    }
+   body::before {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+  opacity: 0.2;
+  z-index: -1;
+  animation: twinkle 10s linear infinite;
+}
+
 
     @keyframes twinkle {
       0% { background-position: 0 0; }
