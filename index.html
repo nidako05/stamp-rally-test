@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <title>ねこ！</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- OGP設定 -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
 <meta property="og:image" content="https://your-site.com/images/ogp-image.PNG">
@@ -95,7 +93,7 @@ input[type="password"], button {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
 
-/* canvasの背景を後ろに表示する */
+/* canvas背景を後ろに表示する */
 #shooting-stars-container {
   position: fixed;
   top: 0; left: 0;
@@ -211,11 +209,22 @@ function init() {
   updateStampsUI();
 }
 
-// 流れ星アニメーション
+// 星空＆流れ星アニメーション
 const canvas = document.getElementById('shooting-stars');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+
+let stars = [];
+for (let i = 0; i < 100; i++) {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 1.2,
+    alpha: Math.random(),
+    alphaChange: Math.random() * 0.02
+  });
+}
 
 let shootingStars = [];
 function createShootingStar() {
@@ -226,11 +235,25 @@ function createShootingStar() {
     speed: Math.random() * 10 + 6,
     size: Math.random() * 1.5 + 1,
     opacity: 1,
-    angle: Math.PI / 4 // 45度（左上→右下）
+    angle: Math.PI / 4
   });
 }
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 丸い星を描く
+  ctx.fillStyle = "white";
+  stars.forEach(star => {
+    star.alpha += star.alphaChange;
+    if (star.alpha <= 0 || star.alpha >= 1) star.alphaChange = -star.alphaChange;
+    ctx.globalAlpha = star.alpha;
+    ctx.beginPath();
+    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // 流れ星を描く
+  ctx.globalAlpha = 1;
   shootingStars.forEach((star, i) => {
     const dx = Math.cos(star.angle) * star.length;
     const dy = Math.sin(star.angle) * star.length;
@@ -247,7 +270,6 @@ function animate() {
   });
   requestAnimationFrame(animate);
 }
-// 流れ星の生成間隔
 setInterval(createShootingStar, 600);
 animate();
 
