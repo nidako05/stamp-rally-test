@@ -256,25 +256,59 @@ function init() {
   updateStampsUI();
 }
 
-// ✨ 流れ星ときらきら星を生成
+// 流れ星アニメーション
+const canvas = document.getElementById('shooting-stars');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let shootingStars = [];
+
 function createShootingStar() {
-  const star = document.createElement('div');
-  star.classList.add('shooting-star');
-  star.style.top = Math.random() * window.innerHeight + 'px';
-  star.style.left = Math.random() * window.innerWidth + 'px';
-  document.getElementById('shooting-stars-container').appendChild(star);
-  setTimeout(() => star.remove(), 1000);
+  shootingStars.push({
+    x: Math.random() * canvas.width,
+    y: 0,
+    length: Math.random() * 80 + 100,
+    speed: Math.random() * 10 + 6,
+    size: Math.random() * 1.5 + 1,
+    opacity: 1,
+    angle: Math.PI / 4 // 45度（左上→右下）
+  });
 }
-function createTwinkleStar() {
-  const star = document.createElement('div');
-  star.classList.add('star-shape');
-  star.style.top = Math.random() * window.innerHeight + 'px';
-  star.style.left = Math.random() * window.innerWidth + 'px';
-  document.getElementById('shooting-stars-container').appendChild(star);
-  setTimeout(() => star.remove(), 1000);
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  shootingStars.forEach((star, i) => {
+    const dx = Math.cos(star.angle) * star.length;
+    const dy = Math.sin(star.angle) * star.length;
+
+    ctx.beginPath();
+    ctx.moveTo(star.x, star.y);
+    ctx.lineTo(star.x + dx, star.y + dy);
+    ctx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
+    ctx.lineWidth = star.size;
+    ctx.stroke();
+
+    star.x += star.speed * Math.cos(star.angle);
+    star.y += star.speed * Math.sin(star.angle);
+    star.opacity -= 0.01;
+
+    if (star.opacity <= 0) shootingStars.splice(i, 1);
+  });
+
+  requestAnimationFrame(animate);
 }
-setInterval(createShootingStar, 2000);
-setInterval(createTwinkleStar, 1000);
+
+// 星の数を増やすために生成間隔を短く
+setInterval(createShootingStar, 300);
+animate();
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 </script>
+
 </body>
 </html>
