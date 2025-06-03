@@ -1,9 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <title>ねこ！</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- OGP設定 -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
 <meta property="og:image" content="https://your-site.com/images/ogp-image.PNG">
@@ -23,7 +25,7 @@ body {
   position: relative;
 }
 h1, h2 { color: #E7E2C1; }
-#login, #content { max-width: 800px; margin: auto; }
+#login, #content { max-width: 800px; margin: auto; position: relative; z-index: 1; }
 input[type="password"], button {
   padding: 10px;
   border-radius: 5px;
@@ -92,17 +94,20 @@ input[type="password"], button {
 .stamp-get-overlay h2 {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
-@media (max-width: 600px) {
-  .stamp { width: 80%; height: auto; }
-  .stamp-get-overlay img { width: 80%; }
+
+/* canvasの背景を後ろに表示する */
+#shooting-stars-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  overflow: hidden;
 }
 </style>
 </head>
 
 <body>
-<!-- 星空の背景 -->
 <div id="shooting-stars-container">
-  <canvas id="starry-sky"></canvas>
   <canvas id="shooting-stars"></canvas>
 </div>
 
@@ -141,7 +146,6 @@ input[type="password"], button {
 <script>
 const correctPassword = "roacoco";
 const totalStamps = 5;
-
 function checkPassword() {
   const input = document.getElementById('passwordInput').value;
   if (input === correctPassword) {
@@ -207,77 +211,49 @@ function init() {
   updateStampsUI();
 }
 
-// 星空・流れ星描画
-const starryCanvas = document.getElementById('starry-sky');
-const starryCtx = starryCanvas.getContext('2d');
-const shootingCanvas = document.getElementById('shooting-stars');
-const shootingCtx = shootingCanvas.getContext('2d');
-
-starryCanvas.width = shootingCanvas.width = window.innerWidth;
-starryCanvas.height = shootingCanvas.height = window.innerHeight;
-
-function drawStarrySky() {
-  const stars = 200;
-  starryCtx.fillStyle = "#0d1b2a";
-  starryCtx.fillRect(0, 0, starryCanvas.width, starryCanvas.height);
-  for (let i = 0; i < stars; i++) {
-    const x = Math.random() * starryCanvas.width;
-    const y = Math.random() * starryCanvas.height;
-    const radius = Math.random() * 1.2;
-    starryCtx.beginPath();
-    starryCtx.arc(x, y, radius, 0, 2 * Math.PI);
-    starryCtx.fillStyle = "white";
-    starryCtx.fill();
-  }
-}
-drawStarrySky();
+// 流れ星アニメーション
+const canvas = document.getElementById('shooting-stars');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 let shootingStars = [];
-
 function createShootingStar() {
   shootingStars.push({
-    x: Math.random() * shootingCanvas.width,
+    x: Math.random() * canvas.width,
     y: 0,
     length: Math.random() * 80 + 100,
     speed: Math.random() * 10 + 6,
     size: Math.random() * 1.5 + 1,
     opacity: 1,
-    angle: Math.PI / 4 // 左上→右下
+    angle: Math.PI / 4 // 45度（左上→右下）
   });
 }
-
 function animate() {
-  shootingCtx.clearRect(0, 0, shootingCanvas.width, shootingCanvas.height);
-
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   shootingStars.forEach((star, i) => {
     const dx = Math.cos(star.angle) * star.length;
     const dy = Math.sin(star.angle) * star.length;
-
-    shootingCtx.beginPath();
-    shootingCtx.moveTo(star.x, star.y);
-    shootingCtx.lineTo(star.x + dx, star.y + dy);
-    shootingCtx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
-    shootingCtx.lineWidth = star.size;
-    shootingCtx.stroke();
-
+    ctx.beginPath();
+    ctx.moveTo(star.x, star.y);
+    ctx.lineTo(star.x + dx, star.y + dy);
+    ctx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
+    ctx.lineWidth = star.size;
+    ctx.stroke();
     star.x += star.speed * Math.cos(star.angle);
     star.y += star.speed * Math.sin(star.angle);
     star.opacity -= 0.01;
-
     if (star.opacity <= 0) shootingStars.splice(i, 1);
   });
-
   requestAnimationFrame(animate);
 }
-
-// 生成間隔を調整して適度な数に
-setInterval(createShootingStar, 800);
+// 流れ星の生成間隔
+setInterval(createShootingStar, 600);
 animate();
 
 window.addEventListener('resize', () => {
-  starryCanvas.width = shootingCanvas.width = window.innerWidth;
-  starryCanvas.height = shootingCanvas.height = window.innerHeight;
-  drawStarrySky();
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 });
 </script>
 
