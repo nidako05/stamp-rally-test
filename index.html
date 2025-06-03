@@ -1,289 +1,276 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ねこ！</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>ねこ！</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- OGP設定 -->
-  <meta property="og:title" content="ねこ！">
-  <meta property="og:description" content="ねこスタンプをコンプリート✨">
-  <meta property="og:image" content="https://your-site.com/images/ogp-image.PNG">
-  <meta property="og:url" content="https://your-site.com/stamp-rally.html">
-  <meta property="og:type" content="website">
+<!-- OGP設定 -->
+<meta property="og:title" content="ねこ！">
+<meta property="og:description" content="ねこスタンプをコンプリート✨">
+<meta property="og:image" content="https://your-site.com/images/ogp-image.PNG">
+<meta property="og:url" content="https://your-site.com/stamp-rally.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 
-  <!-- Twitter/X用 -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ねこ！">
-  <meta name="twitter:description" content="ねこスタンプをコンプリート✨">
-  <meta name="twitter:image" content="https://your-site.com/images/ogp-image.PNG">
+<style>
+body {
+  font-family: 'Georgia', serif;
+  text-align: center;
+  background: #0d1b2a;
+  color: #E7E2C1;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 20px;
+  position: relative;
+}
+h1, h2 { color: #E7E2C1; }
+#login, #content { max-width: 800px; margin: auto; }
+input[type="password"], button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  margin: 10px 0;
+}
 
-  <style>
-    body {
-      font-family: 'Georgia', serif;
-      text-align: center;
-      background: #2A4478;
-      color: #E7E2C1;
-      overflow-x: hidden;
-      margin: 0;
-      padding: 20px;
-      position: relative;
-    }
+/* シェアボタンかわいく */
+.share-buttons a {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #AD6299, #E7E2C1);
+  color: #fff;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.share-buttons a:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+.share-buttons a.line {
+  background: linear-gradient(135deg, #00c300, #a8e6a3);
+}
 
-    h1, h2 {
-      color: #E7E2C1;
-    }
+/* スタンプ */
+#stamp-container { display: flex; flex-wrap: wrap; justify-content: center; }
+.stamp {
+  width: 120px; height: 120px; margin: 10px;
+  border: 2px dashed #E7E2C1; border-radius: 10px;
+  position: relative; overflow: hidden;
+}
+.stamp img {
+  width: 100%; height: 100%; object-fit: contain; border-radius: 8px;
+}
+.collected img {
+  border: 2px solid #AD6299;
+  box-shadow: 0 0 12px rgba(173, 98, 153, 0.7);
+}
 
-    #login, #content {
-      max-width: 800px;
-      margin: auto;
-    }
+/* 進捗バー */
+#progress-container {
+  width: 100%;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 20px auto;
+  max-width: 400px;
+}
+#progress-bar {
+  height: 20px;
+  width: 0;
+  background: linear-gradient(90deg, #AD6299, #E7E2C1, #AD6299);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
 
-    input[type="password"], button {
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-      margin: 10px 0;
-    }
+/* 獲得演出 */
+.stamp-get-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.stamp-get-overlay.active {
+  opacity: 1; pointer-events: all;
+}
+.stamp-get-overlay img {
+  width: 200px; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.6);
+}
+.stamp-get-overlay h2 {
+  margin-top: 20px; font-size: 2em; color: #fffacd;
+}
 
-    #stamp-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+/* 背景の流れ星とキラキラ */
+body::before {
+  content: "";
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1), transparent 70%),
+              linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 75%, transparent 75%, transparent);
+  background-size: 50px 50px;
+  z-index: -2;
+  animation: sparkle 60s linear infinite;
+}
+@keyframes sparkle {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 1000px 1000px, 1000px 1000px; }
+}
+canvas#shooting-stars {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1; pointer-events: none;
+}
 
-    .stamp {
-      width: 120px;
-      height: 120px;
-      margin: 10px;
-      border: 2px dashed #E7E2C1;
-      border-radius: 10px;
-      position: relative;
-      transition: transform 0.3s;
-      overflow: hidden;
-    }
-
-    .stamp img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-
-    .collected img {
-      border: 2px solid #AD6299;
-      box-shadow: 0 0 12px rgba(173, 98, 153, 0.7);
-    }
-
-    /* スマホ縦並び表示 */
-    @media (max-width: 600px) {
-      #stamp-container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .stamp {
-        width: 80%;
-        height: auto;
-      }
-      .stamp img {
-        width: 100%;
-        height: auto;
-      }
-    }
-
-    /* スタンプ獲得時の拡大演出 */
-    .stamp-get-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    .stamp-get-overlay.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .stamp-get-overlay img {
-      width: 200px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.6);
-    }
-    .stamp-get-overlay h2 {
-      margin-top: 20px;
-      font-size: 2em;
-      color: #fffacd;
-    }
-
-    @media (max-width: 600px) {
-      .stamp-get-overlay img {
-        width: 80%;
-      }
-    }
-
-    /* 進捗バー（トンマナ風・アニメーション） */
-    #progress-container {
-      width: 100%;
-      background: #444;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 20px auto;
-      max-width: 400px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.3);
-    }
-    #progress-bar {
-      height: 20px;
-      width: 0;
-      background: linear-gradient(90deg, #AD6299, #E7E2C1, #AD6299);
-      animation: progressBar 3s infinite linear;
-      border-radius: 10px;
-    }
-    @keyframes progressBar {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 100% 50%; }
-    }
-
-    /* 背景の星をよりキラキラに */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: transparent url('https://your-site.com/images/stars.png') repeat;
-      opacity: 0.4;
-      z-index: -1;
-      animation: sparkle 40s linear infinite;
-    }
-    @keyframes sparkle {
-      from { background-position: 0 0; }
-      to { background-position: 1000px 1000px; }
-    }
-  </style>
+/* スマホ対応 */
+@media (max-width: 600px) {
+  .stamp { width: 80%; height: auto; }
+  .stamp-get-overlay img { width: 80%; }
+}
+</style>
 </head>
 
 <body>
-  <div id="login">
-    <h2>パスワードを入力してください</h2>
-    <input type="password" id="passwordInput" placeholder="パスワード">
-    <button onclick="checkPassword()">ログイン</button>
-    <p id="error"></p>
+<canvas id="shooting-stars"></canvas>
+
+<div id="login">
+  <h2>パスワードを入力してください</h2>
+  <input type="password" id="passwordInput" placeholder="パスワード">
+  <button onclick="checkPassword()">ログイン</button>
+  <p id="error"></p>
+</div>
+
+<div id="content" style="display:none;">
+  <h1>ねこスタンプラリー</h1>
+  <p>5つのスタンプを集めよう！</p>
+
+  <div id="progress-container">
+    <div id="progress-bar"></div>
   </div>
 
-  <div id="content" style="display:none;">
-    <img src="images/top-banner.PNG" alt="ねこ" style="max-width:100%;">
-    <h1>ねこスタンプラリー</h1>
-    <p>5つのスタンプを集めよう！</p>
+  <div id="stamp-container"></div>
 
-    <div id="progress-container">
-      <div id="progress-bar"></div>
+  <div id="completion-message" style="display:none;">
+    <h2>コンプリートおめでとう！🎉</h2>
+    <p>可愛くシェアしよう！</p>
+    <div class="share-buttons">
+      <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
+      <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
     </div>
-
-    <div id="stamp-container"></div>
-
-    <div id="completion-message" style="display:none;">
-      <h2>コンプリートおめでとう！🎉</h2>
-      <p>可愛くシェアしよう！</p>
-      <div>
-        <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
-        <a href="#" id="line-share" target="_blank">LINEでシェア</a>
-      </div>
-    </div>
   </div>
+</div>
 
-  <div class="stamp-get-overlay" id="stampGetOverlay" onclick="hideStampGet()">
-    <img id="stampGetImg" src="" alt="スタンプゲット！">
-    <h2>スタンプゲット！</h2>
-  </div>
+<div class="stamp-get-overlay" id="stampGetOverlay" onclick="hideStampGet()">
+  <img id="stampGetImg" src="" alt="スタンプゲット！">
+  <h2>スタンプゲット！</h2>
+</div>
 
-  <script>
-    const correctPassword = "roacoco";
-    const totalStamps = 5;
-
-    function checkPassword() {
-      const input = document.getElementById('passwordInput').value;
-      if (input === correctPassword) {
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('content').style.display = 'block';
-        init();
-      } else {
-        document.getElementById('error').textContent = "パスワードが違います";
-      }
+<script>
+const correctPassword = "roacoco";
+const totalStamps = 5;
+function checkPassword() {
+  const input = document.getElementById('passwordInput').value;
+  if (input === correctPassword) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    init();
+  } else {
+    document.getElementById('error').textContent = "パスワードが違います";
+  }
+}
+function getStampData() {
+  return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
+}
+function saveStampData(stamps) {
+  localStorage.setItem('collectedStamps', JSON.stringify(stamps));
+}
+function getStampFromUrl() {
+  const spot = parseInt(new URLSearchParams(window.location.search).get('spot'));
+  return (!isNaN(spot) && spot >= 1 && spot <= totalStamps) ? spot : null;
+}
+function showStampGet(stampNum) {
+  document.getElementById('stampGetImg').src = `images/stamp${stampNum}.PNG`;
+  document.getElementById('stampGetOverlay').classList.add('active');
+}
+function hideStampGet() {
+  document.getElementById('stampGetOverlay').classList.remove('active');
+}
+function updateStampsUI() {
+  const container = document.getElementById('stamp-container');
+  container.innerHTML = '';
+  const stamps = getStampData();
+  for (let i = 1; i <= totalStamps; i++) {
+    const div = document.createElement('div');
+    div.classList.add('stamp');
+    if (stamps.includes(i)) {
+      div.classList.add('collected');
+      div.innerHTML = `<a href="images/stamp${i}.PNG" download><img src="images/stamp${i}.PNG" alt="スタンプ${i}"></a>`;
+    } else {
+      div.innerHTML = `<img src="images/stamp${i}.PNG" alt="スタンプ${i}" style="opacity:0.2;">`;
     }
+    container.appendChild(div);
+  }
+  document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
+  if (stamps.length >= totalStamps) {
+    document.getElementById('completion-message').style.display = 'block';
+    updateShareLinks();
+  }
+}
+function updateShareLinks() {
+  const text = encodeURIComponent("ねこスタンプをコンプリート✨ #ねこ #cat");
+  const url = encodeURIComponent(window.location.href.split('?')[0]);
+  document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+  document.getElementById('line-share').href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
+}
+function init() {
+  const stamps = getStampData();
+  const newStamp = getStampFromUrl();
+  if (newStamp && !stamps.includes(newStamp)) {
+    stamps.push(newStamp);
+    saveStampData(stamps);
+    showStampGet(newStamp);
+  }
+  updateStampsUI();
+}
 
-    function getStampData() {
-      return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
-    }
-
-    function saveStampData(stamps) {
-      localStorage.setItem('collectedStamps', JSON.stringify(stamps));
-    }
-
-    function getStampFromUrl() {
-      const spot = parseInt(new URLSearchParams(window.location.search).get('spot'));
-      return (!isNaN(spot) && spot >= 1 && spot <= totalStamps) ? spot : null;
-    }
-
-    function showStampGet(stampNum) {
-      document.getElementById('stampGetImg').src = `images/stamp${stampNum}.PNG`;
-      document.getElementById('stampGetOverlay').classList.add('active');
-    }
-
-    function hideStampGet() {
-      document.getElementById('stampGetOverlay').classList.remove('active');
-    }
-
-    function updateStampsUI() {
-      const container = document.getElementById('stamp-container');
-      container.innerHTML = '';
-      const stamps = getStampData();
-
-      for (let i = 1; i <= totalStamps; i++) {
-        const div = document.createElement('div');
-        div.classList.add('stamp');
-        if (stamps.includes(i)) {
-          div.classList.add('collected');
-          div.innerHTML = `<a href="images/stamp${i}.PNG" download><img src="images/stamp${i}.PNG" alt="スタンプ${i}"></a>`;
-        } else {
-          div.innerHTML = `<img src="images/stamp${i}.PNG" alt="スタンプ${i}" style="opacity:0.2;">`;
-        }
-        container.appendChild(div);
-      }
-
-      document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
-
-      if (stamps.length >= totalStamps) {
-        document.getElementById('completion-message').style.display = 'block';
-        updateShareLinks();
-      }
-    }
-
-    function updateShareLinks() {
-      const text = encodeURIComponent("ねこスタンプをコンプリート✨ #ねこ #cat");
-      const url = encodeURIComponent(window.location.href.split('?')[0]);
-      document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-      document.getElementById('line-share').href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
-    }
-
-    function init() {
-      const stamps = getStampData();
-      const newStamp = getStampFromUrl();
-
-      if (newStamp && !stamps.includes(newStamp)) {
-        stamps.push(newStamp);
-        saveStampData(stamps);
-        showStampGet(newStamp);
-      }
-
-      updateStampsUI();
-    }
-
-    window.onload = init;
-  </script>
+// 流れ星アニメーション
+const canvas = document.getElementById('shooting-stars');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let shootingStars = [];
+function createShootingStar() {
+  shootingStars.push({
+    x: Math.random() * canvas.width,
+    y: 0,
+    length: Math.random() * 80 + 100,
+    speed: Math.random() * 10 + 6,
+    size: Math.random() * 1.5 + 1,
+    opacity: 1
+  });
+}
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  shootingStars.forEach((star, i) => {
+    ctx.beginPath();
+    ctx.moveTo(star.x, star.y);
+    ctx.lineTo(star.x - star.length, star.y + star.length);
+    ctx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
+    ctx.lineWidth = star.size;
+    ctx.stroke();
+    star.x += star.speed;
+    star.y += star.speed;
+    star.opacity -= 0.01;
+    if (star.opacity <= 0) shootingStars.splice(i, 1);
+  });
+  requestAnimationFrame(animate);
+}
+setInterval(createShootingStar, 600);
+animate();
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
 </body>
 </html>
