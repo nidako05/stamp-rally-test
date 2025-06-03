@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -33,7 +33,6 @@ input[type="password"], button {
   margin: 10px 0;
 }
 
-/* シェアボタンかわいく */
 .share-buttons a {
   display: inline-block;
   margin: 10px;
@@ -54,7 +53,6 @@ input[type="password"], button {
   background: linear-gradient(135deg, #00c300, #a8e6a3);
 }
 
-/* スタンプ */
 #stamp-container { display: flex; flex-wrap: wrap; justify-content: center; }
 .stamp {
   width: 120px; height: 120px; margin: 10px;
@@ -69,7 +67,6 @@ input[type="password"], button {
   box-shadow: 0 0 12px rgba(173, 98, 153, 0.7);
 }
 
-/* 進捗バー */
 #progress-container {
   width: 100%;
   background: rgba(255,255,255,0.2);
@@ -86,7 +83,6 @@ input[type="password"], button {
   transition: width 0.5s ease;
 }
 
-/* 獲得演出 */
 .stamp-get-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.8);
@@ -103,26 +99,53 @@ input[type="password"], button {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
 
-/* 背景の流れ星とキラキラ */
+#shooting-stars-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+.shooting-star {
+  position: absolute;
+  width: 2px; height: 100px;
+  background: linear-gradient(45deg, #fff, rgba(255,255,255,0));
+  border-radius: 50%;
+  opacity: 0.8;
+  transform: rotate(45deg);
+  animation: shooting-star-animation 1s linear forwards;
+}
+.star-shape {
+  width: 8px; height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  box-shadow: 0 0 10px #fff, 0 0 20px #fff;
+  animation: twinkle 1s linear forwards;
+}
+@keyframes shooting-star-animation {
+  0% { opacity: 0; transform: translate(0, 0) rotate(45deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate(300px, 300px) rotate(45deg); }
+}
+@keyframes twinkle {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(0.5); }
+}
+
 body::before {
   content: "";
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1), transparent 70%),
-              linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 75%, transparent 75%, transparent);
-  background-size: 50px 50px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1), transparent 70%);
   z-index: -2;
   animation: sparkle 60s linear infinite;
 }
 @keyframes sparkle {
-  from { background-position: 0 0, 0 0; }
-  to { background-position: 1000px 1000px, 1000px 1000px; }
-}
-canvas#shooting-stars {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: -1; pointer-events: none;
+  from { background-position: 0 0; }
+  to { background-position: 1000px 1000px; }
 }
 
-/* スマホ対応 */
 @media (max-width: 600px) {
   .stamp { width: 80%; height: auto; }
   .stamp-get-overlay img { width: 80%; }
@@ -131,7 +154,7 @@ canvas#shooting-stars {
 </head>
 
 <body>
-<canvas id="shooting-stars"></canvas>
+<div id="shooting-stars-container"></div>
 
 <div id="login">
   <h2>パスワードを入力してください</h2>
@@ -233,44 +256,25 @@ function init() {
   updateStampsUI();
 }
 
-// 流れ星アニメーション
-const canvas = document.getElementById('shooting-stars');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-let shootingStars = [];
+// ✨ 流れ星ときらきら星を生成
 function createShootingStar() {
-  shootingStars.push({
-    x: Math.random() * canvas.width,
-    y: 0,
-    length: Math.random() * 80 + 100,
-    speed: Math.random() * 10 + 6,
-    size: Math.random() * 1.5 + 1,
-    opacity: 1
-  });
+  const star = document.createElement('div');
+  star.classList.add('shooting-star');
+  star.style.top = Math.random() * window.innerHeight + 'px';
+  star.style.left = Math.random() * window.innerWidth + 'px';
+  document.getElementById('shooting-stars-container').appendChild(star);
+  setTimeout(() => star.remove(), 1000);
 }
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  shootingStars.forEach((star, i) => {
-    ctx.beginPath();
-    ctx.moveTo(star.x, star.y);
-    ctx.lineTo(star.x - star.length, star.y + star.length);
-    ctx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
-    ctx.lineWidth = star.size;
-    ctx.stroke();
-    star.x += star.speed;
-    star.y += star.speed;
-    star.opacity -= 0.01;
-    if (star.opacity <= 0) shootingStars.splice(i, 1);
-  });
-  requestAnimationFrame(animate);
+function createTwinkleStar() {
+  const star = document.createElement('div');
+  star.classList.add('star-shape');
+  star.style.top = Math.random() * window.innerHeight + 'px';
+  star.style.left = Math.random() * window.innerWidth + 'px';
+  document.getElementById('shooting-stars-container').appendChild(star);
+  setTimeout(() => star.remove(), 1000);
 }
-setInterval(createShootingStar, 600);
-animate();
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+setInterval(createShootingStar, 2000);
+setInterval(createTwinkleStar, 1000);
 </script>
 </body>
 </html>
