@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -96,8 +96,6 @@ input[type="password"], button {
 #completion-overlay h2 {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
-
-/* 下部のフォローボタン */
 .follow-buttons {
   margin-top: 20px;
 }
@@ -114,8 +112,6 @@ input[type="password"], button {
 .follow-buttons a:hover {
   background: #9b59b6;
 }
-
-/* canvas背景を後ろに表示する */
 #shooting-stars-container {
   position: fixed;
   top: 0; left: 0;
@@ -148,24 +144,23 @@ input[type="password"], button {
 
   <div id="stamp-container"></div>
 
-  <!-- ⭐️常に表示するコンプリートメッセージ -->
+  <!-- ⭐️ 常に表示されるシェアボタン -->
+  <div class="share-buttons" style="margin-top: 20px;">
+    <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
+    <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
+  </div>
+
   <div id="completion-message" style="display:none; margin-top: 20px;">
     <h2>コンプリートおめでとう！🎉</h2>
     <p>可愛くシェアしよう！</p>
-    <div class="share-buttons">
-      <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
-      <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
-    </div>
   </div>
 
-  <!-- ⭐️韓国アイドルASTRO公式アカウントリンク -->
   <div class="follow-buttons">
     <a href="https://www.instagram.com/officialastro" target="_blank">ASTRO Instagram</a>
     <a href="https://twitter.com/offclASTRO" target="_blank">ASTRO X</a>
   </div>
 </div>
 
-<!-- オーバーレイ（拡大） -->
 <div class="stamp-get-overlay" id="stampGetOverlay" onclick="hideStampGet()">
   <img id="stampGetImg" src="" alt="スタンプゲット！">
   <h2>スタンプゲット！</h2>
@@ -177,8 +172,6 @@ input[type="password"], button {
 </div>
 
 <script>
-// ⭐️JS: 省略版ですが完成版はここで同じように処理します
-
 const correctPassword = "roacoco";
 const totalStamps = 5;
 
@@ -213,6 +206,10 @@ function showStampGet(stampNum) {
 
 function hideStampGet() {
   document.getElementById('stampGetOverlay').classList.remove('active');
+  const stamps = getStampData();
+  if (stamps.length >= totalStamps) {
+    document.getElementById('completion-overlay').classList.add('active');
+  }
 }
 
 function hideCompletion() {
@@ -238,11 +235,10 @@ function updateStampsUI() {
 
   if (stamps.length >= totalStamps) {
     document.getElementById('completion-message').style.display = 'block';
-    document.getElementById('completion-overlay').classList.add('active');
-    updateShareLinks();
   } else {
     document.getElementById('completion-message').style.display = 'none';
   }
+  updateShareLinks();
 }
 
 function updateShareLinks() {
