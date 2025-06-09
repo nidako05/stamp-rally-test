@@ -8,15 +8,12 @@
 <!-- ✅ OGP設定 -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
-<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG"> 
+<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG">
 <meta property="og:url" content="https://nidako05.github.io/stamp-rally-test/">
 <meta property="og:type" content="website">
 
 <!-- ✅ Twitterカード設定 -->
 <meta name="twitter:card" content="summary_large_image">
-
-<!-- LeafletのCSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
 body {
@@ -126,12 +123,11 @@ input[type="password"], button {
   z-index: -1;
   overflow: hidden;
 }
-#map {
+#top-banner img {
   width: 100%;
-  height: 400px;
-  margin-top: 20px;
+  height: auto;
+  display: block;
   border-radius: 10px;
-  overflow: hidden;
 }
 </style>
 </head>
@@ -139,6 +135,11 @@ input[type="password"], button {
 <body>
 <div id="shooting-stars-container">
   <canvas id="shooting-stars"></canvas>
+</div>
+
+<!--  トップバーナー画像 -->
+<div id="top-banner">
+  <img src="images/top-banner.PNG" alt="トップバーナー画像">
 </div>
 
 <div id="login">
@@ -158,10 +159,6 @@ input[type="password"], button {
 
   <div id="stamp-container"></div>
 
-  <!-- 地図表示 -->
-  <div id="map"></div>
-
-  <!-- シェアボタン -->
   <div class="share-buttons" style="margin-top: 20px;">
     <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
     <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
@@ -188,9 +185,6 @@ input[type="password"], button {
   <h2>コンプリートおめでとう！🎉</h2>
 </div>
 
-<!-- LeafletのJS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 <script>
 const correctPassword = "roacoco";
 const totalStamps = 5;
@@ -205,7 +199,6 @@ function checkPassword() {
     document.getElementById('error').textContent = "パスワードが違います";
   }
 }
-
 function getStampData() {
   return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
 }
@@ -268,10 +261,9 @@ function init() {
     showStampGet(newStamp);
   }
   updateStampsUI();
-  initMap();
 }
 
-// ⭐️ 星空アニメーション
+// 星空アニメーション
 const canvas = document.getElementById('shooting-stars');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -318,38 +310,6 @@ window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 });
-
-// ⭐️ Leaflet地図
-<!-- 地図のスポット部分（例としてひらかたパークの主要アトラクションに更新） -->
-function initMap() {
-  // ひらかたパーク中心付近の座標
-  const map = L.map('map').setView([34.812375, 135.646914], 17);
-
-  // タイルレイヤー設定
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
-  // ⭐️ 正確なスポット情報（例として以下を使用）
-  const spots = [
-    { coords: [34.812987, 135.646745], title: "スタンプ1：レッドファルコン" },
-    { coords: [34.812530, 135.647190], title: "スタンプ2：ウェーブスインガー" },
-    { coords: [34.812220, 135.646200], title: "スタンプ3：マジカルラグーン" },
-    { coords: [34.811900, 135.646850], title: "スタンプ4：ノームトレイン" },
-    { coords: [34.811600, 135.647400], title: "スタンプ5：スカイウォーカー" },
-  ];
-
-  // スポットのマーカーを追加
-  spots.forEach(spot => {
-    L.marker(spot.coords).addTo(map)
-      .bindPopup(`<b>${spot.title}</b>`);
-  });
-}
-</script>
-
-  });
-}
 </script>
 </body>
 </html>
