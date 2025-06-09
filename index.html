@@ -5,10 +5,10 @@
 <title>ねこ！</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ✅ OGP設定（必須） -->
+<!-- ✅ OGP設定 -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
-<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG"> 
+<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG">
 <meta property="og:url" content="https://nidako05.github.io/stamp-rally-test/">
 <meta property="og:type" content="website">
 
@@ -16,7 +16,6 @@
 <meta name="twitter:card" content="summary_large_image">
 
 <style>
-/* （ここはCSSそのまま） */
 body {
   font-family: 'Georgia', serif;
   text-align: center;
@@ -124,12 +123,23 @@ input[type="password"], button {
   z-index: -1;
   overflow: hidden;
 }
+#top-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 10px;
+}
 </style>
 </head>
 
 <body>
 <div id="shooting-stars-container">
   <canvas id="shooting-stars"></canvas>
+</div>
+
+<!-- ✅ トップバーナー画像 -->
+<div id="top-banner">
+  <img src="images/top-banner.PNG" alt="トップバーナー画像">
 </div>
 
 <div id="login">
@@ -149,7 +159,6 @@ input[type="password"], button {
 
   <div id="stamp-container"></div>
 
-  <!-- シェアボタン -->
   <div class="share-buttons" style="margin-top: 20px;">
     <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
     <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
@@ -172,7 +181,7 @@ input[type="password"], button {
 </div>
 
 <div id="completion-overlay" onclick="hideCompletion()">
-  <img src="images/complete.png" alt="コンプリート">
+  <img src="images/complete.PNG" alt="コンプリート">
   <h2>コンプリートおめでとう！🎉</h2>
 </div>
 
@@ -190,7 +199,6 @@ function checkPassword() {
     document.getElementById('error').textContent = "パスワードが違います";
   }
 }
-
 function getStampData() {
   return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
 }
@@ -255,7 +263,7 @@ function init() {
   updateStampsUI();
 }
 
-// ⭐️ 星空アニメーション
+// 星空アニメーション
 const canvas = document.getElementById('shooting-stars');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
