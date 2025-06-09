@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -77,46 +77,42 @@ input[type="password"], button {
   border-radius: 10px;
   transition: width 0.5s ease;
 }
-.stamp-get-overlay {
+.stamp-get-overlay,
+#completion-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.8);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s;
 }
-.stamp-get-overlay.active {
+.stamp-get-overlay.active,
+#completion-overlay.active {
   opacity: 1; pointer-events: all;
 }
-.stamp-get-overlay img {
+.stamp-get-overlay img,
+#completion-overlay img {
   width: 200px; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.6);
 }
-.stamp-get-overlay h2 {
+.stamp-get-overlay h2,
+#completion-overlay h2 {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
 
-/* コンプリートオーバーレイ */
-#completion-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.8);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.5s;
-}
-#completion-overlay h2 {
-  color: #fffacd; font-size: 2.5em;
-}
-#completion-overlay p {
-  color: #fff; font-size: 1.2em;
-}
-#completion-overlay button {
+/* 下部のフォローボタン */
+.follow-buttons {
   margin-top: 20px;
-  background: #AD6299;
-  color: #fff;
+}
+.follow-buttons a {
+  display: inline-block;
+  margin: 10px;
   padding: 10px 20px;
-  border: none;
-  border-radius: 20px;
+  background: #6441a5;
+  color: #fff;
+  border-radius: 30px;
+  text-decoration: none;
   font-weight: bold;
-  cursor: pointer;
+}
+.follow-buttons a:hover {
+  background: #9b59b6;
 }
 
 /* canvas背景を後ろに表示する */
@@ -151,49 +147,41 @@ input[type="password"], button {
   </div>
 
   <div id="stamp-container"></div>
+
+  <!-- ⭐️常に表示するコンプリートメッセージ -->
+  <div id="completion-message" style="display:none; margin-top: 20px;">
+    <h2>コンプリートおめでとう！🎉</h2>
+    <p>可愛くシェアしよう！</p>
+    <div class="share-buttons">
+      <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
+      <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
+    </div>
+  </div>
+
+  <!-- ⭐️韓国アイドルASTRO公式アカウントリンク -->
+  <div class="follow-buttons">
+    <a href="https://www.instagram.com/officialastro" target="_blank">ASTRO Instagram</a>
+    <a href="https://twitter.com/offclASTRO" target="_blank">ASTRO X</a>
+  </div>
 </div>
 
+<!-- オーバーレイ（拡大） -->
 <div class="stamp-get-overlay" id="stampGetOverlay" onclick="hideStampGet()">
   <img id="stampGetImg" src="" alt="スタンプゲット！">
   <h2>スタンプゲット！</h2>
 </div>
 
-<!-- コンプリートオーバーレイ -->
-<div id="completion-overlay">
+<div id="completion-overlay" onclick="hideCompletion()">
+  <img src="images/complete.png" alt="コンプリート">
   <h2>コンプリートおめでとう！🎉</h2>
-  <p>可愛くシェアしよう！</p>
-  <div class="share-buttons">
-    <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
-    <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
-  </div>
-  <button onclick="hideCompletion()">閉じる</button>
-</div>
-
-<!-- ASTROリンク -->
-<div id="astro-links">
-  <a href="https://www.instagram.com/officialastro/" target="_blank" style="
-    background: #833AB4;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  ">ASTRO Instagram</a>
-  <a href="https://twitter.com/offclASTRO" target="_blank" style="
-    background: #1DA1F2;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  ">ASTRO X</a>
 </div>
 
 <script>
+// ⭐️JS: 省略版ですが完成版はここで同じように処理します
+
 const correctPassword = "roacoco";
 const totalStamps = 5;
+
 function checkPassword() {
   const input = document.getElementById('passwordInput').value;
   if (input === correctPassword) {
@@ -204,23 +192,33 @@ function checkPassword() {
     document.getElementById('error').textContent = "パスワードが違います";
   }
 }
+
 function getStampData() {
   return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
 }
+
 function saveStampData(stamps) {
   localStorage.setItem('collectedStamps', JSON.stringify(stamps));
 }
+
 function getStampFromUrl() {
   const spot = parseInt(new URLSearchParams(window.location.search).get('spot'));
   return (!isNaN(spot) && spot >= 1 && spot <= totalStamps) ? spot : null;
 }
+
 function showStampGet(stampNum) {
   document.getElementById('stampGetImg').src = `images/stamp${stampNum}.PNG`;
   document.getElementById('stampGetOverlay').classList.add('active');
 }
+
 function hideStampGet() {
   document.getElementById('stampGetOverlay').classList.remove('active');
 }
+
+function hideCompletion() {
+  document.getElementById('completion-overlay').classList.remove('active');
+}
+
 function updateStampsUI() {
   const container = document.getElementById('stamp-container');
   container.innerHTML = '';
@@ -237,18 +235,23 @@ function updateStampsUI() {
     container.appendChild(div);
   }
   document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
+
   if (stamps.length >= totalStamps) {
-    document.getElementById('completion-overlay').style.opacity = '1';
-    document.getElementById('completion-overlay').style.pointerEvents = 'all';
+    document.getElementById('completion-message').style.display = 'block';
+    document.getElementById('completion-overlay').classList.add('active');
     updateShareLinks();
+  } else {
+    document.getElementById('completion-message').style.display = 'none';
   }
 }
+
 function updateShareLinks() {
   const text = encodeURIComponent("ねこスタンプをコンプリート✨ #ねこ #cat");
   const url = encodeURIComponent(window.location.href.split('?')[0]);
   document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
   document.getElementById('line-share').href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
 }
+
 function init() {
   const stamps = getStampData();
   const newStamp = getStampFromUrl();
@@ -259,43 +262,22 @@ function init() {
   }
   updateStampsUI();
 }
-function hideCompletion() {
-  document.getElementById('completion-overlay').style.opacity = '0';
-  document.getElementById('completion-overlay').style.pointerEvents = 'none';
-}
 
 // 星空＆流れ星アニメーション
 const canvas = document.getElementById('shooting-stars');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-
 let stars = [];
 for (let i = 0; i < 100; i++) {
-  stars.push({
-    x: Math.random() * canvas.width,
-    y: Math.random() * canvas.height,
-    radius: Math.random() * 1.2,
-    alpha: Math.random(),
-    alphaChange: Math.random() * 0.02
-  });
+  stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.2, alpha: Math.random(), alphaChange: Math.random() * 0.02 });
 }
-
 let shootingStars = [];
 function createShootingStar() {
-  shootingStars.push({
-    x: Math.random() * canvas.width,
-    y: 0,
-    length: Math.random() * 80 + 100,
-    speed: Math.random() * 10 + 6,
-    size: Math.random() * 1.5 + 1,
-    opacity: 1,
-    angle: Math.PI / 4
-  });
+  shootingStars.push({ x: Math.random() * canvas.width, y: 0, length: Math.random() * 80 + 100, speed: Math.random() * 10 + 6, size: Math.random() * 1.5 + 1, opacity: 1, angle: Math.PI / 4 });
 }
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   ctx.fillStyle = "white";
   stars.forEach(star => {
     star.alpha += star.alphaChange;
@@ -305,7 +287,6 @@ function animate() {
     ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
     ctx.fill();
   });
-
   ctx.globalAlpha = 1;
   shootingStars.forEach((star, i) => {
     const dx = Math.cos(star.angle) * star.length;
@@ -325,7 +306,6 @@ function animate() {
 }
 setInterval(createShootingStar, 600);
 animate();
-
 window.addEventListener('resize', () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
