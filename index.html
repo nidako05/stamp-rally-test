@@ -4,14 +4,19 @@
 <meta charset="UTF-8">
 <title>ねこ！</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✅ OGP設定（必須） -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
-<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/complete.png">
+<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG"> 
 <meta property="og:url" content="https://nidako05.github.io/stamp-rally-test/">
 <meta property="og:type" content="website">
+
+<!-- ✅ Twitterカード設定 -->
 <meta name="twitter:card" content="summary_large_image">
 
 <style>
+/* （ここはCSSそのまま） */
 body {
   font-family: 'Georgia', serif;
   text-align: center;
@@ -144,7 +149,7 @@ input[type="password"], button {
 
   <div id="stamp-container"></div>
 
-  <!-- ⭐️ 常に表示されるシェアボタン -->
+  <!-- シェアボタン -->
   <div class="share-buttons" style="margin-top: 20px;">
     <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
     <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
@@ -156,8 +161,8 @@ input[type="password"], button {
   </div>
 
   <div class="follow-buttons">
-    <a href="https://www.instagram.com/officialastro" target="_blank">ASTRO Instagram</a>
-    <a href="https://twitter.com/offclASTRO" target="_blank">ASTRO X</a>
+    <a href="https://www.instagram.com/officialastro" target="_blank">Instagramをフォロー！</a>
+    <a href="https://twitter.com/offclASTRO" target="_blank">Xをフォロー！</a>
   </div>
 </div>
 
@@ -189,21 +194,17 @@ function checkPassword() {
 function getStampData() {
   return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
 }
-
 function saveStampData(stamps) {
   localStorage.setItem('collectedStamps', JSON.stringify(stamps));
 }
-
 function getStampFromUrl() {
   const spot = parseInt(new URLSearchParams(window.location.search).get('spot'));
   return (!isNaN(spot) && spot >= 1 && spot <= totalStamps) ? spot : null;
 }
-
 function showStampGet(stampNum) {
   document.getElementById('stampGetImg').src = `images/stamp${stampNum}.PNG`;
   document.getElementById('stampGetOverlay').classList.add('active');
 }
-
 function hideStampGet() {
   document.getElementById('stampGetOverlay').classList.remove('active');
   const stamps = getStampData();
@@ -211,11 +212,9 @@ function hideStampGet() {
     document.getElementById('completion-overlay').classList.add('active');
   }
 }
-
 function hideCompletion() {
   document.getElementById('completion-overlay').classList.remove('active');
 }
-
 function updateStampsUI() {
   const container = document.getElementById('stamp-container');
   container.innerHTML = '';
@@ -232,7 +231,6 @@ function updateStampsUI() {
     container.appendChild(div);
   }
   document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
-
   if (stamps.length >= totalStamps) {
     document.getElementById('completion-message').style.display = 'block';
   } else {
@@ -240,14 +238,12 @@ function updateStampsUI() {
   }
   updateShareLinks();
 }
-
 function updateShareLinks() {
   const text = encodeURIComponent("ねこスタンプをコンプリート✨ #ねこ #cat");
   const url = encodeURIComponent(window.location.href.split('?')[0]);
   document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
   document.getElementById('line-share').href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
 }
-
 function init() {
   const stamps = getStampData();
   const newStamp = getStampFromUrl();
@@ -259,7 +255,7 @@ function init() {
   updateStampsUI();
 }
 
-// 星空＆流れ星アニメーション
+// ⭐️ 星空アニメーション
 const canvas = document.getElementById('shooting-stars');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
