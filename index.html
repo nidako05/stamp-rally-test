@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -93,6 +93,32 @@ input[type="password"], button {
   margin-top: 20px; font-size: 2em; color: #fffacd;
 }
 
+/* コンプリートオーバーレイ */
+#completion-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.5s;
+}
+#completion-overlay h2 {
+  color: #fffacd; font-size: 2.5em;
+}
+#completion-overlay p {
+  color: #fff; font-size: 1.2em;
+}
+#completion-overlay button {
+  margin-top: 20px;
+  background: #AD6299;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 /* canvas背景を後ろに表示する */
 #shooting-stars-container {
   position: fixed;
@@ -125,20 +151,44 @@ input[type="password"], button {
   </div>
 
   <div id="stamp-container"></div>
-
-  <div id="completion-message" style="display:none;">
-    <h2>コンプリートおめでとう！🎉</h2>
-    <p>可愛くシェアしよう！</p>
-    <div class="share-buttons">
-      <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
-      <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
-    </div>
-  </div>
 </div>
 
 <div class="stamp-get-overlay" id="stampGetOverlay" onclick="hideStampGet()">
   <img id="stampGetImg" src="" alt="スタンプゲット！">
   <h2>スタンプゲット！</h2>
+</div>
+
+<!-- コンプリートオーバーレイ -->
+<div id="completion-overlay">
+  <h2>コンプリートおめでとう！🎉</h2>
+  <p>可愛くシェアしよう！</p>
+  <div class="share-buttons">
+    <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
+    <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
+  </div>
+  <button onclick="hideCompletion()">閉じる</button>
+</div>
+
+<!-- ASTROリンク -->
+<div id="astro-links">
+  <a href="https://www.instagram.com/officialastro/" target="_blank" style="
+    background: #833AB4;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  ">ASTRO Instagram</a>
+  <a href="https://twitter.com/offclASTRO" target="_blank" style="
+    background: #1DA1F2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  ">ASTRO X</a>
 </div>
 
 <script>
@@ -188,7 +238,8 @@ function updateStampsUI() {
   }
   document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
   if (stamps.length >= totalStamps) {
-    document.getElementById('completion-message').style.display = 'block';
+    document.getElementById('completion-overlay').style.opacity = '1';
+    document.getElementById('completion-overlay').style.pointerEvents = 'all';
     updateShareLinks();
   }
 }
@@ -207,6 +258,10 @@ function init() {
     showStampGet(newStamp);
   }
   updateStampsUI();
+}
+function hideCompletion() {
+  document.getElementById('completion-overlay').style.opacity = '0';
+  document.getElementById('completion-overlay').style.pointerEvents = 'none';
 }
 
 // 星空＆流れ星アニメーション
@@ -241,7 +296,6 @@ function createShootingStar() {
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 丸い星を描く
   ctx.fillStyle = "white";
   stars.forEach(star => {
     star.alpha += star.alphaChange;
@@ -252,7 +306,6 @@ function animate() {
     ctx.fill();
   });
 
-  // 流れ星を描く
   ctx.globalAlpha = 1;
   shootingStars.forEach((star, i) => {
     const dx = Math.cos(star.angle) * star.length;
@@ -278,6 +331,5 @@ window.addEventListener('resize', () => {
   canvas.height = window.innerHeight;
 });
 </script>
-
 </body>
 </html>
