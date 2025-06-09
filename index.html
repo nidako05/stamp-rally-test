@@ -320,24 +320,34 @@ window.addEventListener('resize', () => {
 });
 
 // ⭐️ Leaflet地図
+<!-- 地図のスポット部分（例としてひらかたパークの主要アトラクションに更新） -->
 function initMap() {
-  const map = L.map('map').setView([34.813345, 135.649187], 17);
+  // ひらかたパーク中心付近の座標
+  const map = L.map('map').setView([34.812375, 135.646914], 17);
+
+  // タイルレイヤー設定
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
 
+  // ⭐️ 正確なスポット情報（例として以下を使用）
   const spots = [
-    { coords: [34.812900, 135.648700], title: "スタンプ1：マジカルボルケーノ" },
-    { coords: [34.812500, 135.649200], title: "スタンプ2：カード迷路ぐるり森" },
-    { coords: [34.813000, 135.649800], title: "スタンプ3：ウェーブスインガー" },
-    { coords: [34.813500, 135.650200], title: "スタンプ4：木製コースターエルフ" },
-    { coords: [34.814000, 135.649000], title: "スタンプ5：スカイウォーカー" },
+    { coords: [34.812987, 135.646745], title: "スタンプ1：レッドファルコン" },
+    { coords: [34.812530, 135.647190], title: "スタンプ2：ウェーブスインガー" },
+    { coords: [34.812220, 135.646200], title: "スタンプ3：マジカルラグーン" },
+    { coords: [34.811900, 135.646850], title: "スタンプ4：ノームトレイン" },
+    { coords: [34.811600, 135.647400], title: "スタンプ5：スカイウォーカー" },
   ];
 
+  // スポットのマーカーを追加
   spots.forEach(spot => {
     L.marker(spot.coords).addTo(map)
       .bindPopup(`<b>${spot.title}</b>`);
+  });
+}
+</script>
+
   });
 }
 </script>
