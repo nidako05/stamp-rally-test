@@ -8,12 +8,15 @@
 <!-- ✅ OGP設定 -->
 <meta property="og:title" content="ねこ！">
 <meta property="og:description" content="ねこスタンプをコンプリート✨">
-<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG">
+<meta property="og:image" content="https://nidako05.github.io/stamp-rally-test/images/ogp-image.PNG"> 
 <meta property="og:url" content="https://nidako05.github.io/stamp-rally-test/">
 <meta property="og:type" content="website">
 
 <!-- ✅ Twitterカード設定 -->
 <meta name="twitter:card" content="summary_large_image">
+
+<!-- LeafletのCSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
 body {
@@ -23,7 +26,8 @@ body {
   color: #E7E2C1;
   overflow-x: hidden;
   margin: 0;
-  padding: 20px;
+  padding: 20px 0 20px 0;
+  padding-top: 80px; /* トップバナーの高さ分の余白 */
   position: relative;
 }
 h1, h2 { color: #E7E2C1; }
@@ -123,23 +127,42 @@ input[type="password"], button {
   z-index: -1;
   overflow: hidden;
 }
-#top-banner img {
+#map {
   width: 100%;
-  height: auto;
-  display: block;
+  height: 400px;
+  margin-top: 20px;
   border-radius: 10px;
+  overflow: hidden;
+}
+
+/* トップバナー */
+#top-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #0d1b2a;
+  z-index: 10000;
+  text-align: center;
+  padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.7);
+}
+#top-banner img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
 }
 </style>
 </head>
 
 <body>
+<!-- トップバナー -->
+<header id="top-banner">
+  <img src="images/top-banner.PNG" alt="トップバナー" />
+</header>
+
 <div id="shooting-stars-container">
   <canvas id="shooting-stars"></canvas>
-</div>
-
-<!-- ✅ トップバーナー画像 -->
-<div id="top-banner">
-  <img src="images/top-banner.PNG" alt="トップバーナー画像">
 </div>
 
 <div id="login">
@@ -159,6 +182,10 @@ input[type="password"], button {
 
   <div id="stamp-container"></div>
 
+  <!-- 地図表示 -->
+  <div id="map"></div>
+
+  <!-- シェアボタン -->
   <div class="share-buttons" style="margin-top: 20px;">
     <a href="#" id="twitter-share" target="_blank">Xでシェア</a>
     <a href="#" id="line-share" target="_blank" class="line">LINEでシェア</a>
@@ -185,6 +212,9 @@ input[type="password"], button {
   <h2>コンプリートおめでとう！🎉</h2>
 </div>
 
+<!-- LeafletのJS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
 const correctPassword = "roacoco";
 const totalStamps = 5;
@@ -199,6 +229,7 @@ function checkPassword() {
     document.getElementById('error').textContent = "パスワードが違います";
   }
 }
+
 function getStampData() {
   return JSON.parse(localStorage.getItem('collectedStamps') || '[]');
 }
@@ -241,75 +272,96 @@ function updateStampsUI() {
   document.getElementById('progress-bar').style.width = `${(stamps.length/totalStamps)*100}%`;
   if (stamps.length >= totalStamps) {
     document.getElementById('completion-message').style.display = 'block';
-  } else {
-    document.getElementById('completion-message').style.display = 'none';
   }
-  updateShareLinks();
-}
-function updateShareLinks() {
-  const text = encodeURIComponent("ねこスタンプをコンプリート✨ #ねこ #cat");
-  const url = encodeURIComponent(window.location.href.split('?')[0]);
-  document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-  document.getElementById('line-share').href = `https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`;
 }
 function init() {
-  const stamps = getStampData();
-  const newStamp = getStampFromUrl();
-  if (newStamp && !stamps.includes(newStamp)) {
-    stamps.push(newStamp);
-    saveStampData(stamps);
-    showStampGet(newStamp);
-  }
   updateStampsUI();
-}
 
-// 星空アニメーション
-const canvas = document.getElementById('shooting-stars');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-let stars = [];
-for (let i = 0; i < 100; i++) {
-  stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.2, alpha: Math.random(), alphaChange: Math.random() * 0.02 });
-}
-let shootingStars = [];
-function createShootingStar() {
-  shootingStars.push({ x: Math.random() * canvas.width, y: 0, length: Math.random() * 80 + 100, speed: Math.random() * 10 + 6, size: Math.random() * 1.5 + 1, opacity: 1, angle: Math.PI / 4 });
-}
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "white";
-  stars.forEach(star => {
-    star.alpha += star.alphaChange;
-    if (star.alpha <= 0 || star.alpha >= 1) star.alphaChange = -star.alphaChange;
-    ctx.globalAlpha = star.alpha;
-    ctx.beginPath();
-    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-    ctx.fill();
+  const newStamp = getStampFromUrl();
+  if (newStamp) {
+    const stamps = getStampData();
+    if (!stamps.includes(newStamp)) {
+      stamps.push(newStamp);
+      saveStampData(stamps);
+      updateStampsUI();
+      showStampGet(newStamp);
+    }
+  }
+
+  // シェアボタンのリンク設定
+  const url = encodeURIComponent(window.location.href);
+  const text = encodeURIComponent('ねこスタンプラリーをコンプリートしました！');
+  document.getElementById('twitter-share').href = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+  document.getElementById('line-share').href = `https://line.me/R/msg/text/?${text}%20${url}`;
+
+  // Leaflet 地図初期化
+  const map = L.map('map').setView([34.8010, 135.6466], 16); // ひらかたパーク周辺
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // スタンプのスポットマーカー例
+  const spots = [
+    {id:1, lat:35.682839, lng:139.759455, title:'スタンプ1'},
+    {id:2, lat:35.689487, lng:139.691711, title:'スタンプ2'},
+    {id:3, lat:35.673343, lng:139.710388, title:'スタンプ3'},
+    {id:4, lat:35.693825, lng:139.703299, title:'スタンプ4'},
+    {id:5, lat:35.676398, lng:139.76417, title:'スタンプ5'}
+  ];
+  spots.forEach(spot => {
+    L.marker([spot.lat, spot.lng]).addTo(map)
+      .bindPopup(spot.title);
   });
-  ctx.globalAlpha = 1;
-  shootingStars.forEach((star, i) => {
-    const dx = Math.cos(star.angle) * star.length;
-    const dy = Math.sin(star.angle) * star.length;
-    ctx.beginPath();
-    ctx.moveTo(star.x, star.y);
-    ctx.lineTo(star.x + dx, star.y + dy);
-    ctx.strokeStyle = `rgba(255,255,255,${star.opacity})`;
-    ctx.lineWidth = star.size;
-    ctx.stroke();
-    star.x += star.speed * Math.cos(star.angle);
-    star.y += star.speed * Math.sin(star.angle);
-    star.opacity -= 0.01;
-    if (star.opacity <= 0) shootingStars.splice(i, 1);
-  });
-  requestAnimationFrame(animate);
+
+  // 流れ星アニメーション（簡易版）
+  const canvas = document.getElementById('shooting-stars');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const stars = [];
+  function createStar() {
+    return {
+      x: Math.random() * width,
+      y: Math.random() * height,
+      length: Math.random() * 80 + 10,
+      speed: Math.random() * 10 + 6,
+      size: Math.random() * 1 + 0.1
+    };
+  }
+  for (let i=0; i<5; i++) stars.push(createStar());
+
+  function animate() {
+    ctx.clearRect(0,0,width,height);
+    ctx.fillStyle = 'white';
+    ctx.shadowColor = 'white';
+    ctx.shadowBlur = 10;
+
+    stars.forEach(star => {
+      ctx.beginPath();
+      ctx.moveTo(star.x, star.y);
+      ctx.lineTo(star.x + star.length, star.y);
+      ctx.lineWidth = star.size;
+      ctx.strokeStyle = 'white';
+      ctx.shadowColor = 'white';
+      ctx.stroke();
+
+      star.x += star.speed;
+      if (star.x > width) {
+        Object.assign(star, createStar());
+        star.x = 0;
+      }
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
 }
-setInterval(createShootingStar, 600);
-animate();
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
 </script>
+
 </body>
 </html>
